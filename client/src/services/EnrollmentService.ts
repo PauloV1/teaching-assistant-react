@@ -78,6 +78,35 @@ class EnrollmentService {
       throw error;
     }
   }
+
+  //request self-evaluation for all students
+  static async requestSelfEvaluationAll(classId: string,goal: string): Promise<any> {
+  const response = await fetch(
+    `${API_BASE_URL}/api/classes/${classId}/requestSelfEvaluationAll/${goal}`,
+    { method: 'POST' }
+  );
+
+  if (!response.ok) {
+    throw new Error('Failed to request self-evaluation for all students');
+  }
+
+  return response.json();
+  }
+
+// Request self-evaluation for a specific student
+static async requestSelfEvaluation(classId: string, studentCPF: string, goal: string): Promise<any> {
+  const response = await fetch(
+    `${API_BASE_URL}/api/classes/${classId}/enrollments/${studentCPF}/requestSelfEvaluation/${goal}`,
+    { method: 'POST' }
+  );
+
+  if (!response.ok) {
+    throw new Error('Failed to request self-evaluation');
+  }
+
+  return response.json();
+}
+
 }
 
 export default EnrollmentService;
