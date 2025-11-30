@@ -3,22 +3,27 @@
     {
       "name": "Paulo Borba",
       "cpf": "11111111111",
-      "email": "phmb@cin.ufpe.br"
+      "email": "ddaniel.live@gmail.com"
     },
     {
       "name": "Maria Modularidade",
       "cpf": "22222222222",
-      "email": "mm@cin.ufpe.br"
+      "email": "daniel.nascimentosilva@ufpe.br"
     },
     {
       "name": "João Elegância",
       "cpf": "33333333333",
-      "email": "je@cin.ufpe.br"
+      "email": "daniel.nascimentosilva@ufpe.br"
     },
     {
       "name": "Joana Refatoração",
       "cpf": "55555555555",
-      "email": "jr@gmail.com"
+      "email": "ddaniel.live@gmail.com"
+    },
+    {
+      "name": "daniel",
+      "cpf": "12312312321",
+      "email": "ddaniel.live@gmail.com"
     }
   ],
   "classes": [
@@ -170,6 +175,11 @@
               "grade": "MA"
             }
           ],
+          "selfEvaluations": []
+        },
+        {
+          "studentCPF": "12312312321",
+          "evaluations": [],
           "selfEvaluations": []
         }
       ]

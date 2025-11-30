@@ -8,6 +8,7 @@ export class Enrollment {
   // Para controle de pedido de autoavaliação
   private selfEvaluationRequested: boolean = false;
   private selfEvaluationRequestDate?: string;
+  private oneTimeSchedule: { goal: string, executeAt: number } | null = null;
   private nextAutoResendTime?: string;
   private resendAttempts: number = 0;
   private pendingGoals: string[] = [];
@@ -157,23 +158,30 @@ export class Enrollment {
     this.resendAttempts = 0;
 }
 
-  // Agendar próximo reenvio automático
-  scheduleNextAutoResend(hours: number) {
-      const next = new Date(Date.now() + hours * 3600 * 1000);
-      this.nextAutoResendTime = next.toISOString();
-      this.resendAttempts++;
+// Método para AGENDAR (Chamado pela Rota)
+  public scheduleOneTimeReminder(goal: string, hoursFromNow: number) {
+      const futureDate = Date.now() + (hoursFromNow * 60 * 60 * 1000);
+      this.oneTimeSchedule = {
+          goal: goal,
+          executeAt: futureDate
+      };
   }
-  // Limpar pedido de autoavaliação
-  clearSelfEvaluationRequest() {
-      this.selfEvaluationRequested = false;
-      this.selfEvaluationRequestDate = undefined;
-      this.nextAutoResendTime = undefined;
-      this.resendAttempts = 0;
-  }
-  // Verificar se deve reenviar pedido de autoavaliação
-  mustAutoResend(): boolean {
-      if (!this.nextAutoResendTime) return false;
-      return new Date() >= new Date(this.nextAutoResendTime);
+
+  // Método para VERIFICAR e EXECUTAR o agendamento (Chamado pelo Scheduler)
+  public checkAndExecuteOneTime(now: number): string | null {
+    // 1. Se não tem nada agendado, sai.
+    if (!this.oneTimeSchedule) return null;
+    // 2. Se ainda não chegou a hora, sai.
+    if (now < this.oneTimeSchedule.executeAt) return null;
+    // 3. Chegou a hora! Verifica se o aluno já fez a tarefa nesse meio tempo.
+    const goal = this.oneTimeSchedule.goal;
+    const alreadyDone = this.getSelfEvaluationForGoal(goal);
+    // 4. Limpa o agendamento (Regra: Envia uma vez e para)
+    this.oneTimeSchedule = null;
+    // 5. Se o aluno já fez, não retornamos nada (cancela o envio)
+    if (alreadyDone) return null;
+    // 6. Se não fez, retorna a meta para o servidor enviar o e-mail
+    return goal;
   }
 
   // Convert to JSON for API responses
@@ -184,8 +192,7 @@ export class Enrollment {
       selfEvaluations: this.selfEvaluations.map(selfEvaluation => selfEvaluation.toJSON()),
       selfEvaluationRequested: this.selfEvaluationRequested,
       selfEvaluationRequestDate: this.selfEvaluationRequestDate,
-      nextAutoResendTime: this.nextAutoResendTime,
-      resendAttempts: this.resendAttempts,
+      oneTimeSchedule: this.oneTimeSchedule,
     };
   }
 
@@ -210,9 +217,7 @@ export class Enrollment {
 
     enrollment.selfEvaluationRequested = data.selfEvaluationRequested ?? false;
     enrollment.selfEvaluationRequestDate = data.selfEvaluationRequestDate;
-    enrollment.nextAutoResendTime = data.nextAutoResendTime;
-    enrollment.resendAttempts = data.resendAttempts ?? 0;
-
+    enrollment.oneTimeSchedule = data.oneTimeSchedule || null;
     return enrollment;
   }
 
