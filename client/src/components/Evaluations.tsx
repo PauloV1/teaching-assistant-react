@@ -102,6 +102,32 @@ const Evaluations: React.FC<EvaluationsProps> = ({ onError }) => {
     return t < s;
   };
 
+  const getStudentDiscrepancyInfo = (
+    evaluationGoals: string[],
+    studentEvaluations: Record<string, string>,
+    studentSelfEvaluations: Record<string, string>
+  ) => {
+    let total = 0;
+    let discrepant = 0;
+
+    for (const goal of evaluationGoals) {
+      const teacherEval = studentEvaluations[goal] || "";
+      const selfEval = studentSelfEvaluations[goal] || "";
+
+      if (teacherEval || selfEval) {
+        total++;
+        if (compareGoal(teacherEval, selfEval)) discrepant++;
+      }
+    }
+
+    const percentage = total === 0 ? 0 : Math.round((discrepant / total) * 100);
+
+    return {
+      percentage,
+      highlight: percentage > 25
+    };
+  };
+
   if (isLoading) {
     return (
       <div className="evaluation-section">
