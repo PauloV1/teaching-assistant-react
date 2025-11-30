@@ -438,16 +438,25 @@ const Evaluations: React.FC<EvaluationsProps> = ({ onError }) => {
                       return acc;
                     }, {} as { [goal: string]: string });
 
+                    const { percentage, highlight } = getStudentDiscrepancyInfo(
+                      evaluationGoals,
+                      studentEvaluations,
+                      studentSelfEvaluations
+                    );
+
                     return (
                       <tr key={student.cpf} className="student-row">
                         <td className="student-name-cell" style={{ width: '180px' }}>
-                          {student.name}
+                          {student.name}                          
+                          {highlight && (
+                            <InfoButton text={"Discrepância de " + percentage + "%"} />
+                          )}
                         </td>
                         {evaluationGoals.map(goal => {
                           const evaluation = studentEvaluations[goal] || '';
                           const selfEvaluation = studentSelfEvaluations[goal] || '';
                           const discrepancyClass = getDiscrepancyClass(evaluation, selfEvaluation);
-
+                          const hasDiscrepancy = compareGoal(evaluation, selfEvaluation);
                           const getGradeStyle = (grade: string) => {
                             switch (grade) {
                               case 'MA':
@@ -506,6 +515,9 @@ const Evaluations: React.FC<EvaluationsProps> = ({ onError }) => {
                                 backgroundColor: discrepancyClass === 'discrepancy' ? '#fef3c7' : (student.cpf.charCodeAt(0) % 2 === 0 ? '#f0f9ff' : '#ffffff'),
                                 width: '80px'
                               }}>
+                                {hasDiscrepancy && (
+                                  <InfoButton text={"Nota Discrepante"} />
+                                )}
                                 <span style={{
                                   display: 'inline-block',
                                   padding: '4px 8px',
