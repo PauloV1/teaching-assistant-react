@@ -1193,3 +1193,9 @@ tbody tr:last-child td {
   background-color: #fecaca;
   color: #991b1b;
 }
+
+.students-list tbody tr:hover {
+  background-color: #3cacd4c0; 
+  transition: background-color 0.2s ease; 
+  cursor: pointer; 
+}

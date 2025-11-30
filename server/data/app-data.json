@@ -24,6 +24,51 @@
       "name": "daniel",
       "cpf": "12312312321",
       "email": "ddaniel.live@gmail.com"
+    },
+    {
+      "name": "Millena 1",
+      "cpf": "21493294329",
+      "email": "mfmn@cin.ufpe.br"
+    },
+    {
+      "name": "Millena 2",
+      "cpf": "83783257328",
+      "email": "millenaneves110@gmail.com"
+    },
+    {
+      "name": "Millena 3",
+      "cpf": "75208494737",
+      "email": "millena.neves@ufpe.br"
+    },
+    {
+      "name": "Manu 1",
+      "cpf": "75492038492",
+      "email": "egs2@cin.ufpe.br"
+    },
+    {
+      "name": "Manú 2",
+      "cpf": "23712053829",
+      "email": "manugio112@gmail.com"
+    },
+    {
+      "name": "Manu 3",
+      "cpf": "12839502148",
+      "email": "manugio101103@gmail.com"
+    },
+    {
+      "name": "Manú 4",
+      "cpf": "91591259329",
+      "email": "emanuelle.giovanna@ufpe.br"
+    },
+    {
+      "name": "Paulo",
+      "cpf": "19238924721",
+      "email": "pvbs@cin.ufpe.br"
+    },
+    {
+      "name": "Joana",
+      "cpf": "19230588129",
+      "email": "jdon@cin.ufpe.br"
     }
   ],
   "classes": [
@@ -179,6 +224,51 @@
         },
         {
           "studentCPF": "12312312321",
+          "evaluations": [],
+          "selfEvaluations": []
+        },
+        {
+          "studentCPF": "21493294329",
+          "evaluations": [],
+          "selfEvaluations": []
+        },
+        {
+          "studentCPF": "83783257328",
+          "evaluations": [],
+          "selfEvaluations": []
+        },
+        {
+          "studentCPF": "75208494737",
+          "evaluations": [],
+          "selfEvaluations": []
+        },
+        {
+          "studentCPF": "75492038492",
+          "evaluations": [],
+          "selfEvaluations": []
+        },
+        {
+          "studentCPF": "23712053829",
+          "evaluations": [],
+          "selfEvaluations": []
+        },
+        {
+          "studentCPF": "12839502148",
+          "evaluations": [],
+          "selfEvaluations": []
+        },
+        {
+          "studentCPF": "91591259329",
+          "evaluations": [],
+          "selfEvaluations": []
+        },
+        {
+          "studentCPF": "19238924721",
+          "evaluations": [],
+          "selfEvaluations": []
+        },
+        {
+          "studentCPF": "19230588129",
           "evaluations": [],
           "selfEvaluations": []
         }
