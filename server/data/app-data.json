@@ -3,82 +3,22 @@
     {
       "name": "Paulo Borba",
       "cpf": "11111111111",
-      "email": "ddaniel.live@gmail.com"
+      "email": "phmb@cin.ufpe.br"
     },
     {
       "name": "Maria Modularidade",
       "cpf": "22222222222",
-      "email": "daniel.nascimentosilva@ufpe.br"
+      "email": "mm@cin.ufpe.br"
     },
     {
       "name": "João Elegância",
       "cpf": "33333333333",
-      "email": "daniel.nascimentosilva@ufpe.br"
+      "email": "je@cin.ufpe.br"
     },
     {
       "name": "Joana Refatoração",
       "cpf": "55555555555",
-      "email": "ddaniel.live@gmail.com"
-    },
-    {
-      "name": "daniel",
-      "cpf": "12312312321",
-      "email": "ddaniel.live@gmail.com"
-    },
-    {
-      "name": "Millena 1",
-      "cpf": "21493294329",
-      "email": "mfmn@cin.ufpe.br"
-    },
-    {
-      "name": "Millena 2",
-      "cpf": "83783257328",
-      "email": "millenaneves110@gmail.com"
-    },
-    {
-      "name": "Millena 3",
-      "cpf": "75208494737",
-      "email": "millena.neves@ufpe.br"
-    },
-    {
-      "name": "Manu 1",
-      "cpf": "75492038492",
-      "email": "egs2@cin.ufpe.br"
-    },
-    {
-      "name": "Manú 2",
-      "cpf": "23712053829",
-      "email": "manugio112@gmail.com"
-    },
-    {
-      "name": "Manu 3",
-      "cpf": "12839502148",
-      "email": "manugio101103@gmail.com"
-    },
-    {
-      "name": "Manú 4",
-      "cpf": "91591259329",
-      "email": "emanuelle.giovanna@ufpe.br"
-    },
-    {
-      "name": "Paulo",
-      "cpf": "19238924721",
-      "email": "pvbs@cin.ufpe.br"
-    },
-    {
-      "name": "Joana",
-      "cpf": "19230588129",
-      "email": "jdon@cin.ufpe.br"
-    },
-    {
-      "name": "Test Student",
-      "cpf": "12345678901",
-      "email": "test@example.com"
-    },
-    {
-      "name": "Aluno Teste",
-      "cpf": "12345678909",
-      "email": "aluno@teste.com"
+      "email": "jr@gmail.com"
     }
   ],
   "classes": [
@@ -86,6 +26,18 @@
       "topic": "Engenharia de Software e Sistemas",
       "semester": 1,
       "year": 2025,
+      "especificacaoDoCalculoDaMedia": {
+        "pesosDosConceitos": {
+          "MA": 10,
+          "MPA": 7,
+          "MANA": 0
+        },
+        "pesosDasMetas": {
+          "Gerência de Configuração": 1,
+          "Gerência de Projeto": 1,
+          "Qualidade de Software": 1
+        }
+      },
       "enrollments": [
         {
           "studentCPF": "11111111111",
@@ -114,8 +66,7 @@
               "goal": "Refactoring",
               "grade": "MA"
             }
-          ],
-          "selfEvaluations": []
+          ]
         },
         {
           "studentCPF": "55555555555",
@@ -144,8 +95,7 @@
               "goal": "Tests",
               "grade": "MPA"
             }
-          ],
-          "selfEvaluations": []
+          ]
         },
         {
           "studentCPF": "22222222222",
@@ -162,8 +112,7 @@
               "goal": "Project Management",
               "grade": "MPA"
             }
-          ],
-          "selfEvaluations": []
+          ]
         }
       ]
     },
@@ -171,6 +120,18 @@
       "topic": "Engenharia de Software e Sistemas",
       "semester": 2,
       "year": 2025,
+      "especificacaoDoCalculoDaMedia": {
+        "pesosDosConceitos": {
+          "MA": 10,
+          "MPA": 7,
+          "MANA": 0
+        },
+        "pesosDasMetas": {
+          "Gerência de Configuração": 1,
+          "Gerência de Projeto": 1,
+          "Qualidade de Software": 1
+        }
+      },
       "enrollments": [
         {
           "studentCPF": "22222222222",
@@ -199,8 +160,7 @@
               "goal": "Tests",
               "grade": "MA"
             }
-          ],
-          "selfEvaluations": []
+          ]
         },
         {
           "studentCPF": "33333333333",
@@ -229,160 +189,7 @@
               "goal": "Refactoring",
               "grade": "MA"
             }
-          ],
-          "selfEvaluations": []
-        },
-        {
-          "studentCPF": "12312312321",
-          "evaluations": [],
-          "selfEvaluations": []
-        },
-        {
-          "studentCPF": "21493294329",
-          "evaluations": [],
-          "selfEvaluations": []
-        },
-        {
-          "studentCPF": "83783257328",
-          "evaluations": [],
-          "selfEvaluations": []
-        },
-        {
-          "studentCPF": "75208494737",
-          "evaluations": [],
-          "selfEvaluations": []
-        },
-        {
-          "studentCPF": "75492038492",
-          "evaluations": [],
-          "selfEvaluations": []
-        },
-        {
-          "studentCPF": "23712053829",
-          "evaluations": [],
-          "selfEvaluations": []
-        },
-        {
-          "studentCPF": "12839502148",
-          "evaluations": [],
-          "selfEvaluations": []
-        },
-        {
-          "studentCPF": "91591259329",
-          "evaluations": [],
-          "selfEvaluations": []
-        },
-        {
-          "studentCPF": "19238924721",
-          "evaluations": [],
-          "selfEvaluations": []
-        },
-        {
-          "studentCPF": "19230588129",
-          "evaluations": [],
-          "selfEvaluations": []
-        }
-      ]
-    },
-    {
-      "topic": "Engenharia de Teste",
-      "semester": 1,
-      "year": 2025,
-      "enrollments": []
-    },
-    {
-      "topic": "Engenharia de Teste - 1764566021928",
-      "semester": 1,
-      "year": 2025,
-      "enrollments": [
-        {
-          "studentCPF": "12345678901",
-          "evaluations": [],
-          "selfEvaluations": []
-        }
-      ]
-    },
-    {
-      "topic": "Turma 1764566463330",
-      "semester": 1,
-      "year": 2025,
-      "enrollments": []
-    },
-    {
-      "topic": "Turma 1764567135101",
-      "semester": 1,
-      "year": 2025,
-      "enrollments": []
-    },
-    {
-      "topic": "Turma 1764567260582",
-      "semester": 1,
-      "year": 2025,
-      "enrollments": []
-    },
-    {
-      "topic": "Turma 1764567481983",
-      "semester": 1,
-      "year": 2025,
-      "enrollments": []
-    },
-    {
-      "topic": "Turma 1764567534457",
-      "semester": 1,
-      "year": 2025,
-      "enrollments": []
-    },
-    {
-      "topic": "Turma 1764567739733",
-      "semester": 1,
-      "year": 2025,
-      "enrollments": []
-    },
-    {
-      "topic": "Turma 1764568584890",
-      "semester": 1,
-      "year": 2025,
-      "enrollments": []
-    },
-    {
-      "topic": "Turma 1764569550838",
-      "semester": 1,
-      "year": 2025,
-      "enrollments": []
-    },
-    {
-      "topic": "Turma 1764569666715",
-      "semester": 1,
-      "year": 2025,
-      "enrollments": [
-        {
-          "studentCPF": "12345678909",
-          "evaluations": [],
-          "selfEvaluations": []
-        }
-      ]
-    },
-    {
-      "topic": "Turma 1764569997107",
-      "semester": 1,
-      "year": 2025,
-      "enrollments": [
-        {
-          "studentCPF": "12345678909",
-          "evaluations": [],
-          "selfEvaluations": []
-        }
-      ]
-    },
-    {
-      "topic": "Turma 1764570086305",
-      "semester": 1,
-      "year": 2025,
-      "enrollments": [
-        {
-          "studentCPF": "12345678909",
-          "evaluations": [],
-          "selfEvaluations": []
+          ]
         }
       ]
     }
