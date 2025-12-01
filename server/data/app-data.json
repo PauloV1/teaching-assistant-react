@@ -69,6 +69,16 @@
       "name": "Joana",
       "cpf": "19230588129",
       "email": "jdon@cin.ufpe.br"
+    },
+    {
+      "name": "Test Student",
+      "cpf": "12345678901",
+      "email": "test@example.com"
+    },
+    {
+      "name": "Aluno Teste",
+      "cpf": "12345678909",
+      "email": "aluno@teste.com"
     }
   ],
   "classes": [
@@ -269,6 +279,108 @@
         },
         {
           "studentCPF": "19230588129",
+          "evaluations": [],
+          "selfEvaluations": []
+        }
+      ]
+    },
+    {
+      "topic": "Engenharia de Teste",
+      "semester": 1,
+      "year": 2025,
+      "enrollments": []
+    },
+    {
+      "topic": "Engenharia de Teste - 1764566021928",
+      "semester": 1,
+      "year": 2025,
+      "enrollments": [
+        {
+          "studentCPF": "12345678901",
+          "evaluations": [],
+          "selfEvaluations": []
+        }
+      ]
+    },
+    {
+      "topic": "Turma 1764566463330",
+      "semester": 1,
+      "year": 2025,
+      "enrollments": []
+    },
+    {
+      "topic": "Turma 1764567135101",
+      "semester": 1,
+      "year": 2025,
+      "enrollments": []
+    },
+    {
+      "topic": "Turma 1764567260582",
+      "semester": 1,
+      "year": 2025,
+      "enrollments": []
+    },
+    {
+      "topic": "Turma 1764567481983",
+      "semester": 1,
+      "year": 2025,
+      "enrollments": []
+    },
+    {
+      "topic": "Turma 1764567534457",
+      "semester": 1,
+      "year": 2025,
+      "enrollments": []
+    },
+    {
+      "topic": "Turma 1764567739733",
+      "semester": 1,
+      "year": 2025,
+      "enrollments": []
+    },
+    {
+      "topic": "Turma 1764568584890",
+      "semester": 1,
+      "year": 2025,
+      "enrollments": []
+    },
+    {
+      "topic": "Turma 1764569550838",
+      "semester": 1,
+      "year": 2025,
+      "enrollments": []
+    },
+    {
+      "topic": "Turma 1764569666715",
+      "semester": 1,
+      "year": 2025,
+      "enrollments": [
+        {
+          "studentCPF": "12345678909",
+          "evaluations": [],
+          "selfEvaluations": []
+        }
+      ]
+    },
+    {
+      "topic": "Turma 1764569997107",
+      "semester": 1,
+      "year": 2025,
+      "enrollments": [
+        {
+          "studentCPF": "12345678909",
+          "evaluations": [],
+          "selfEvaluations": []
+        }
+      ]
+    },
+    {
+      "topic": "Turma 1764570086305",
+      "semester": 1,
+      "year": 2025,
+      "enrollments": [
+        {
+          "studentCPF": "12345678909",
           "evaluations": [],
           "selfEvaluations": []
         }

@@ -632,7 +632,10 @@ app.post('/api/classes/gradeImport/:classId', upload_dir.single('file'), async (
 
 const SCHEDULER_INTERVAL = 60 * 1000; // Roda a cada 1 minuto
 //
-setInterval(async () => {
+
+
+if (process.env.NODE_ENV !== 'test') {
+  setInterval(async () => {
   try {
     const now = Date.now();
     const allClasses = classes.getAllClasses(); 
@@ -666,5 +669,13 @@ setInterval(async () => {
 }, SCHEDULER_INTERVAL);
 
   app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+    console.log(`Server running on ${PORT}`);
   });
+}
+
+
+//  app.listen(PORT, () => {
+//    console.log(`Server running on http://localhost:${PORT}`);
+//  });
+
+  export { app };
