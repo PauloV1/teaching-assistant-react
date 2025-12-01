@@ -7,6 +7,39 @@ import { Classes } from './models/Classes';
 import { Class } from './models/Class';
 import * as fs from 'fs';
 import * as path from 'path';
+import emailjs from '@emailjs/nodejs';
+
+const EMAILJS_CONFIG = {
+  serviceId: 'service_49bbhrl',
+  templateId: 'template_1zwx7jn',
+  publicKey: 'moFkIqCWH9DJh3hLu',
+  privateKey: 'wEFW3itl7Lp5tE3txZxJR',
+};
+
+const sendEmail = async (to: string, subject: string, text: string): Promise<void> => {
+  try {
+    // Esses parâmetros devem bater com as variáveis {{variavel}} no seu Template do site
+    const templateParams = {
+      to_email: to,
+      subject: subject,
+      message: text,
+    };
+
+    await emailjs.send(
+      EMAILJS_CONFIG.serviceId,
+      EMAILJS_CONFIG.templateId,
+      templateParams,
+      {
+        publicKey: EMAILJS_CONFIG.publicKey,
+        privateKey: EMAILJS_CONFIG.privateKey, // Obrigatório no Backend
+      }
+    );
+
+    console.log(`EmailJS enviado para: ${to}`);
+  } catch (err) {
+    console.error('Erro ao enviar EmailJS:', err);
+  }
+};
 
 // usado para ler arquivos em POST
 const multer = require('multer');
@@ -210,26 +243,32 @@ app.get('/api/students', (req: Request, res: Response) => {
   }
 });
 
-
-
 // POST /api/classes/:classId/requestSelfEvaluationAll/:goal
-app.post('/api/classes/:classId/requestSelfEvaluationAll/:goal', (req, res) => {
+app.post('/api/classes/:classId/requestSelfEvaluationAll/:goal', async (req, res) => {
   try {
     const { classId, goal } = req.params;
 
     const classObj = classes.findClassById(classId);
     if (!classObj) return res.status(404).json({ error: "Class not found" });
 
-    classObj.getEnrollments().forEach(enrollment => {
+    for (const enrollment of classObj.getEnrollments()) {
 
-      // ❗ Só envia se o aluno NÃO preencheu essa meta
       const filled = enrollment.getSelfEvaluationForGoal(goal);
 
       if (!filled) {
-        enrollment.requestSelfEvaluation(goal); // vamos ajustar esse método já já
+        enrollment.requestSelfEvaluation(goal);
+        
+        try {
+          await sendEmail(
+            enrollment.getStudent().email,
+            `Solicitação de Autoavaliação para ${goal}`,
+            `Olá ${enrollment.getStudent().name},\n\nVocê foi solicitado a preencher a autoavaliação para a meta: ${goal}.\nPor favor, acesse o sistema para completar sua autoavaliação.\n\nObrigado!`
+          );
+        } catch (emailErr) {
+          console.error(`Erro ao enviar email para ${enrollment.getStudent().name}:`, emailErr);
+        }
       }
-
-    });
+    }
 
     triggerSave();
     return res.json({ message: "Requests sent where missing." });
@@ -241,20 +280,35 @@ app.post('/api/classes/:classId/requestSelfEvaluationAll/:goal', (req, res) => {
 
 
 // POST /api/classes/:classId/enrollments/:studentCPF/requestSelfEvaluation/:goal
-app.post('/api/classes/:classId/enrollments/:studentCPF/requestSelfEvaluation/:goal', (req, res) => {
+app.post('/api/classes/:classId/enrollments/:studentCPF/requestSelfEvaluation/:goal', async(req, res) => {
   try {
     const { classId, studentCPF, goal } = req.params;
 
+    const clearCPF = studentCPF.replace(/[^\d]/g, '');
+    
     const classObj = classes.findClassById(classId);
     if (!classObj) return res.status(404).json({ error: "Class not found" });
 
-    const enrollment = classObj.findEnrollmentByStudentCPF(studentCPF);
+    const enrollment = classObj.findEnrollmentByStudentCPF(clearCPF);
     if (!enrollment) return res.status(404).json({ error: "Student not enrolled" });
 
-    // ❗ Só envia se aluno não respondeu essa meta
     const filled = enrollment.getSelfEvaluationForGoal(goal);
+
+    console.log('cpf:', clearCPF, 'goal:', goal, 'filled:', filled);
+
     if (filled) {
       return res.json({ message: `Student already filled goal '${goal}'` });
+    }
+
+    try {
+        await sendEmail(
+          enrollment.getStudent().email,
+          `Solicitação de Autoavaliação para ${goal}`,
+          `Olá ${enrollment.getStudent().name},\n\nVocê foi solicitado a preencher a autoavaliação para a meta: ${goal}.\nPor favor, acesse o sistema para completar sua autoavaliação.\n\nObrigado!`
+        );
+    } catch (emailErr) {
+        console.error("Erro no envio de email:", emailErr);
+        // Opcional: Você pode decidir retornar erro 500 aqui se o email for obrigatório
     }
 
     enrollment.requestSelfEvaluation(goal);
@@ -265,6 +319,44 @@ app.post('/api/classes/:classId/enrollments/:studentCPF/requestSelfEvaluation/:g
   } catch (err:any) {
     return res.status(500).json({ error: err.message });
   }
+});
+
+// Rota para agendar envio futuro para turma
+app.post('/api/classes/:classId/scheduleOneTime/:goal', async (req, res) => {
+  try {
+    const { classId, goal } = req.params;
+    const { hours } = req.body; // Ex: 48
+
+    if (!hours) return res.status(400).json({ error: "Horas não informadas" });
+
+    const classObj = classes.findClassById(classId);
+    if (!classObj) return res.status(404).json({ error: "Turma não encontrada" });
+
+    let count = 0;
+
+    classObj.getEnrollments().forEach(enrollment => {
+      // Só agenda se o aluno ainda não fez
+      if (!enrollment.getSelfEvaluationForGoal(goal)) {
+         // Chama o método novo que criamos no Enrollment
+         enrollment.scheduleOneTimeReminder(goal, Number(hours));
+         count++;
+      }
+    });
+
+    triggerSave(); // Salva no JSON
+    
+    // Note que NÃO enviamos e-mail agora. Apenas agendamos.
+    return res.json({ message: `Agendado disparo único daqui a ${hours}h para ${count} alunos.` });
+
+  } catch (err:any) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+app.post("/api/classes/:classId/self-evaluation/:cpf", (req, res) => {
+  const { classId, cpf } = req.params;
+  //Fazer o send email
+  res.status(200).json({ ok: true, message: "Solicitação enviada" });
 });
 
 // POST /api/students - Add a new student
@@ -284,12 +376,6 @@ app.post('/api/students', (req: Request, res: Response) => {
   } catch (error) {
     res.status(400).json({ error: (error as Error).message });
   }
-});
-
-app.post("/api/classes/:classId/self-evaluation/:cpf", (req, res) => {
-  const { classId, cpf } = req.params;
-  //Fazer o send email
-  res.status(200).json({ ok: true, message: "Solicitação enviada" });
 });
 
 // PUT /api/students/:cpf - Update a student
@@ -544,35 +630,52 @@ app.post('/api/classes/gradeImport/:classId', upload_dir.single('file'), async (
   res.status(501).json({ error: "Endpoint ainda não implementado." });
 });
 
-// Scheduler simples: roda a cada 60s e processa reenviamentos
-const AUTO_RESEND_CHECK_INTERVAL_MS = 60 * 1000; // 60s
-const DEFAULT_RESEND_HOURS = 24; // reenvia após 24h por padrão
+const SCHEDULER_INTERVAL = 60 * 1000; // Roda a cada 1 minuto
+//
 
-setInterval(() => {
+
+if (process.env.NODE_ENV !== 'test') {
+  setInterval(async () => {
   try {
-    const allClasses = classes.getAllClasses(); // pega array de Class
+    const now = Date.now();
+    const allClasses = classes.getAllClasses(); 
+    let houveMudanca = false;
 
-    allClasses.forEach(classObj => {
-      classObj.getEnrollments().forEach(enrollment => {
-        if (typeof enrollment.mustAutoResend === 'function' && enrollment.mustAutoResend()) {
-          // Aqui você colocaria o envio real de e-mail.
-          console.log(`[AUTO-RESEND] Re-sending self-evaluation request for student ${enrollment.getStudent().getCPF()} in class ${classObj.getClassId()}`);
+    for (const classObj of allClasses) {
+      for (const enrollment of classObj.getEnrollments()) {
+        
+        // O método retorna o NOME DA META se for hora de enviar, ou null se não for
+        // Ele internamente já LIMPOU o agendamento (One-shot)
+        const metaParaEnviar = enrollment.checkAndExecuteOneTime(now);
 
-          // reagenda o próximo reenvio
-          if (typeof enrollment.scheduleNextAutoResend === 'function') {
-            enrollment.scheduleNextAutoResend(DEFAULT_RESEND_HOURS);
-          }
-
-          // persiste mudanças (resendAttempts e nextAutoResendTime)
-          triggerSave();
+        if (metaParaEnviar) {
+          const student = enrollment.getStudent();
+          console.log(`Enviando lembrete único para ${student.email}`);
+          
+          const msg = `Olá ${student.name}, passando para lembrar que você ainda não preencheu a meta: ${metaParaEnviar}.`;
+          
+          await sendEmail(student.email, `Lembrete: ${metaParaEnviar}`, msg);
+          
+          houveMudanca = true;
         }
-      });
-    });
+      }
+    }
+
+    if (houveMudanca) triggerSave();
+
   } catch (err) {
-    console.error('Auto-resend scheduler error:', err);
+    console.error('Erro no Scheduler:', err);
   }
-}, AUTO_RESEND_CHECK_INTERVAL_MS);
+}, SCHEDULER_INTERVAL);
 
   app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+    console.log(`Server running on ${PORT}`);
   });
+}
+
+
+//  app.listen(PORT, () => {
+//    console.log(`Server running on http://localhost:${PORT}`);
+//  });
+
+  export { app };

@@ -16,7 +16,13 @@
     "lint": "npm run lint --prefix client"
   },
   "devDependencies": {
-    "concurrently": "^8.2.2"
+    "@types/jest": "^30.0.0",
+    "@types/supertest": "^6.0.3",
+    "concurrently": "^8.2.2",
+    "jest": "^30.2.0",
+    "jest-cucumber": "^4.5.0",
+    "supertest": "^7.1.4",
+    "ts-jest": "^29.4.5"
   },
   "keywords": [
     "react",
@@ -31,5 +37,9 @@
   "workspaces": [
     "client",
     "server"
-  ]
+  ],
+  "dependencies": {
+    "lucide-react": "^0.555.0",
+    "nodemailer": "^7.0.11"
+  }
 }
