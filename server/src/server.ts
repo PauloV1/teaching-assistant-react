@@ -7,14 +7,26 @@ import { Classes } from './models/Classes';
 import { Class } from './models/Class';
 import * as fs from 'fs';
 import * as path from 'path';
-import emailjs from '@emailjs/nodejs';
+import dotenv from "dotenv";
+dotenv.config();
+import emailjs from "@emailjs/nodejs";
 
-const EMAILJS_CONFIG = {
-  serviceId: 'service_49bbhrl',
-  templateId: 'template_1zwx7jn',
-  publicKey: 'moFkIqCWH9DJh3hLu',
-  privateKey: 'wEFW3itl7Lp5tE3txZxJR',
+function required(key: string, value: string | undefined): string {
+  if (!value) {
+    throw new Error(`Missing required environment variable: ${key}`);
+  }
+  return value;
+}
+
+export const EMAILJS_CONFIG = {
+  serviceId: required("EMAILJS_SERVICE_ID", process.env.EMAILJS_SERVICE_ID),
+  templateId: required("EMAILJS_TEMPLATE_ID", process.env.EMAILJS_TEMPLATE_ID),
+  publicKey: required("EMAILJS_PUBLIC_KEY", process.env.EMAILJS_PUBLIC_KEY),
+  privateKey: required("EMAILJS_PRIVATE_KEY", process.env.EMAILJS_PRIVATE_KEY),
 };
+
+console.log("CONFIG::", EMAILJS_CONFIG);
+
 
 const sendEmail = async (to: string, subject: string, text: string): Promise<void> => {
   try {
@@ -679,3 +691,4 @@ if (process.env.NODE_ENV !== 'test') {
 //  });
 
   export { app };
+  export { cleanCPF };

@@ -13,7 +13,7 @@
     {
       "name": "João Elegância",
       "cpf": "33333333333",
-      "email": "je@cin.ufpe.br"
+      "email": "ddaniel.live@gmail.com"
     },
     {
       "name": "Joana Refatoração",
@@ -26,18 +26,6 @@
       "topic": "Engenharia de Software e Sistemas",
       "semester": 1,
       "year": 2025,
-      "especificacaoDoCalculoDaMedia": {
-        "pesosDosConceitos": {
-          "MA": 10,
-          "MPA": 7,
-          "MANA": 0
-        },
-        "pesosDasMetas": {
-          "Gerência de Configuração": 1,
-          "Gerência de Projeto": 1,
-          "Qualidade de Software": 1
-        }
-      },
       "enrollments": [
         {
           "studentCPF": "11111111111",
@@ -66,7 +54,8 @@
               "goal": "Refactoring",
               "grade": "MA"
             }
-          ]
+          ],
+          "selfEvaluations": []
         },
         {
           "studentCPF": "55555555555",
@@ -95,7 +84,8 @@
               "goal": "Tests",
               "grade": "MPA"
             }
-          ]
+          ],
+          "selfEvaluations": []
         },
         {
           "studentCPF": "22222222222",
@@ -112,7 +102,8 @@
               "goal": "Project Management",
               "grade": "MPA"
             }
-          ]
+          ],
+          "selfEvaluations": []
         }
       ]
     },
@@ -120,18 +111,6 @@
       "topic": "Engenharia de Software e Sistemas",
       "semester": 2,
       "year": 2025,
-      "especificacaoDoCalculoDaMedia": {
-        "pesosDosConceitos": {
-          "MA": 10,
-          "MPA": 7,
-          "MANA": 0
-        },
-        "pesosDasMetas": {
-          "Gerência de Configuração": 1,
-          "Gerência de Projeto": 1,
-          "Qualidade de Software": 1
-        }
-      },
       "enrollments": [
         {
           "studentCPF": "22222222222",
@@ -160,7 +139,8 @@
               "goal": "Tests",
               "grade": "MA"
             }
-          ]
+          ],
+          "selfEvaluations": []
         },
         {
           "studentCPF": "33333333333",
@@ -189,7 +169,8 @@
               "goal": "Refactoring",
               "grade": "MA"
             }
-          ]
+          ],
+          "selfEvaluations": []
         }
       ]
     }
