@@ -5,8 +5,10 @@ import { Student } from './models/Student';
 import { Evaluation, Grade } from './models/Evaluation';
 import { Classes } from './models/Classes';
 import { Class } from './models/Class';
+import { Report } from './models/Report';
 import * as fs from 'fs';
 import * as path from 'path';
+import { EspecificacaoDoCalculoDaMedia, DEFAULT_ESPECIFICACAO_DO_CALCULO_DA_MEDIA } from './models/EspecificacaoDoCalculoDaMedia';
 
 // usado para ler arquivos em POST
 const multer = require('multer');
@@ -100,7 +102,7 @@ const loadDataFromFile = (): void => {
       if (data.classes && Array.isArray(data.classes)) {
         data.classes.forEach((classData: any) => {
           try {
-            const classObj = new Class(classData.topic, classData.semester, classData.year);
+            const classObj = new Class(classData.topic, classData.semester, classData.year, EspecificacaoDoCalculoDaMedia.fromJSON(classData.especificacaoDoCalculoDaMedia));
             classes.addClass(classObj);
 
             // Load enrollments for this class
@@ -120,17 +122,17 @@ const loadDataFromFile = (): void => {
                     loadEvaluations(enrollmentData.selfEvaluations, enrollment.addOrUpdateSelfEvaluation.bind(enrollment));
                   }
 
-                    
-                    // Load medias and attendance status if provided in the data file
-                    if (typeof enrollmentData.mediaPreFinal !== 'undefined') {
-                      enrollment.setMediaPreFinal(enrollmentData.mediaPreFinal);
-                    }
-                    if (typeof enrollmentData.mediaPosFinal !== 'undefined') {
-                      enrollment.setMediaPosFinal(enrollmentData.mediaPosFinal);
-                    }
-                    if (typeof enrollmentData.reprovadoPorFalta !== 'undefined') {
-                      enrollment.setReprovadoPorFalta(Boolean(enrollmentData.reprovadoPorFalta));
-                    }
+                  // Load medias and attendance status if provided in the data file
+                  if (typeof enrollmentData.mediaPreFinal !== 'undefined') {
+                    enrollment.setMediaPreFinal(enrollmentData.mediaPreFinal);
+                  }
+                  if (typeof enrollmentData.mediaPosFinal !== 'undefined') {
+                    enrollment.setMediaPosFinal(enrollmentData.mediaPosFinal);
+                  }
+                  if (typeof enrollmentData.reprovadoPorFalta !== 'undefined') {
+                    enrollment.setReprovadoPorFalta(Boolean(enrollmentData.reprovadoPorFalta));
+                  }
+
                 } else {
                   console.error(`Student with CPF ${enrollmentData.studentCPF} not found for enrollment`);
                 }
@@ -147,22 +149,15 @@ const loadDataFromFile = (): void => {
   }
 };
 
-// Test mode flag to disable file persistence
-const isTestMode = process.env.NODE_ENV === 'test';
-
 // Trigger save after any modification (async to not block operations)
 const triggerSave = (): void => {
-  if (!isTestMode) {
-    setImmediate(() => {
-      saveDataToFile();
-    });
-  }
+  setImmediate(() => {
+    saveDataToFile();
+  });
 };
 
-// Load existing data on startup (only in non-test mode)
-if (!isTestMode) {
-  loadDataFromFile();
-}
+// Load existing data on startup
+loadDataFromFile();
 
 // Helper function to clean CPF
 const cleanCPF = (cpf: string): string => {
@@ -359,7 +354,7 @@ app.post('/api/classes', (req: Request, res: Response) => {
       return res.status(400).json({ error: 'Topic, semester, and year are required' });
     }
 
-    const classObj = new Class(topic, semester, year);
+    const classObj = new Class(topic, semester, year, DEFAULT_ESPECIFICACAO_DO_CALCULO_DA_MEDIA);
     const newClass = classes.addClass(classObj);
     triggerSave(); // Save to file after adding class
     res.status(201).json(newClass.toJSON());
@@ -481,35 +476,6 @@ app.get('/api/classes/:classId/enrollments', (req: Request, res: Response) => {
   }
 });
 
-// GET /api/classes/:classId/enrollments/:studentCPF/evaluation - Get the student's average and final average for a class
-app.get('/api/classes/:classId/enrollments/:studentCPF/evaluation', (req: Request, res: Response) => {
-  try {
-    const { classId, studentCPF } = req.params;
-
-    const classObj = classes.findClassById(classId);
-    if (!classObj) {
-      return res.status(404).json({ error: 'Class not found' });
-    }
-
-    const cleanedCPF = cleanCPF(studentCPF);
-    const enrollment = classObj.findEnrollmentByStudentCPF(cleanedCPF);
-    if (!enrollment) {
-      return res.status(404).json({ error: 'Student not enrolled in this class' });
-    }
-
-    const mediaPreFinal = enrollment.getMediaPreFinal();
-    const mediaPosFinal = enrollment.getMediaPosFinal();
-
-    res.json({
-      student: enrollment.getStudent().toJSON(),
-      average: mediaPreFinal,
-      final_average: mediaPosFinal
-    });
-  } catch (error) {
-    res.status(400).json({ error: (error as Error).message });
-  }
-});
-
 // PUT /api/classes/:classId/enrollments/:studentCPF/evaluation - Update evaluation for an enrolled student
 app.put('/api/classes/:classId/enrollments/:studentCPF/evaluation', (req, res) =>
   handleEvaluationUpdate(req, res, { type: 'evaluation' })
@@ -528,12 +494,6 @@ app.post('/api/classes/gradeImport/:classId', upload_dir.single('file'), async (
   res.status(501).json({ error: "Endpoint ainda não implementado." });
 });
 
-// Export the app for testing
-export { app, studentSet, classes };
-
-// Only start the server if this file is run directly (not imported for testing)
-if (require.main === module) {
-  app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
-  });
-}
+app.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
+});

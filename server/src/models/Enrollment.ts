@@ -36,7 +36,7 @@ export class Enrollment {
   }
 
   // Get media do estudante antes da prova final
-  getMediaPreFinal(): number | null {
+  getMediaPreFinal(): number{
     return this.mediaPreFinal;
   }
 
@@ -46,7 +46,7 @@ export class Enrollment {
   }
 
   // Get média do estudante depois da final
-  getMediaPosFinal(): number | null {
+  getMediaPosFinal(): number{
     return this.mediaPosFinal;
   }
 
@@ -158,21 +158,16 @@ export class Enrollment {
   }
 
   // Create Enrollment from JSON object
-  static fromJSON(data: { 
-    student: any; 
-    evaluations: any[]; selfEvaluations: any[];
-    mediaPreFinal?: number;
-    mediaPosFinal?: number;
-    reprovadoPorFalta?: boolean;
-  }, student: Student): Enrollment {
+  static fromJSON(data: { student: any; evaluations: any[]; selfEvaluations?: any[]; mediaPreFinal?: number; mediaPosFinal?: number; reprovadoPorFalta?: boolean }, student: Student): Enrollment {
     const evaluations = data.evaluations
       ? data.evaluations.map((evalData: any) => Evaluation.fromJSON(evalData))
       : [];
     const selfEvaluations = data.selfEvaluations
       ? data.selfEvaluations.map((evalData: any) => Evaluation.fromJSON(evalData))
       : [];
-    const mediaPreFinal = data.mediaPreFinal ?? 0;
-    const mediaPosFinal = data.mediaPosFinal ?? 0;
+    
+    const mediaPreFinal = data.mediaPreFinal ?? null;
+    const mediaPosFinal = data.mediaPosFinal ?? null;
     const reprovadoPorFalta = data.reprovadoPorFalta ?? false;
     
     return new Enrollment(student, evaluations, selfEvaluations, mediaPreFinal, mediaPosFinal, reprovadoPorFalta);
