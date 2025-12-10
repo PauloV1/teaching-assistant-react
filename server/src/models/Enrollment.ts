@@ -218,3 +218,5 @@ export class Enrollment {
   }
 
 }
+
+export default Enrollment;

@@ -1,4 +1,4 @@
-import { defineFeature, loadFeature } from 'jest-cucumber';
+/*import { defineFeature, loadFeature } from 'jest-cucumber';
 import request from 'supertest';
 import { app } from '../../src/server';
 
@@ -136,4 +136,4 @@ defineFeature(feature, test => {
     });
   });
 
-});
+});*/

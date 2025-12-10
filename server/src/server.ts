@@ -43,7 +43,7 @@ const sendEmail = async (to: string, subject: string, text: string): Promise<voi
       templateParams,
       {
         publicKey: EMAILJS_CONFIG.publicKey,
-        privateKey: EMAILJS_CONFIG.privateKey, // Obrigatório no Backend
+        privateKey: EMAILJS_CONFIG.privateKey,
       }
     );
 
