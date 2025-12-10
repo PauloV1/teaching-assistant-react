@@ -7,16 +7,30 @@ import { Classes } from './models/Classes';
 import { Class } from './models/Class';
 import * as fs from 'fs';
 import * as path from 'path';
-import emailjs from '@emailjs/nodejs';
+import dotenv from "dotenv";
+dotenv.config();
+import emailjs from "@emailjs/nodejs";
 
-const EMAILJS_CONFIG = {
-  serviceId: 'service_49bbhrl',
-  templateId: 'template_1zwx7jn',
-  publicKey: 'moFkIqCWH9DJh3hLu',
-  privateKey: 'wEFW3itl7Lp5tE3txZxJR',
+function required(key: string, value: string | undefined): string {
+  if (!value) {
+    throw new Error(`Missing required environment variable: ${key}`);
+  }
+  return value;
+}
+
+export const EMAILJS_CONFIG = {
+  serviceId: required("EMAILJS_SERVICE_ID", process.env.EMAILJS_SERVICE_ID),
+  templateId: required("EMAILJS_TEMPLATE_ID", process.env.EMAILJS_TEMPLATE_ID),
+  publicKey: required("EMAILJS_PUBLIC_KEY", process.env.EMAILJS_PUBLIC_KEY),
+  privateKey: required("EMAILJS_PRIVATE_KEY", process.env.EMAILJS_PRIVATE_KEY),
 };
 
-const sendEmail = async (to: string, subject: string, text: string): Promise<void> => {
+console.log("CONFIG::", EMAILJS_CONFIG);
+
+
+const sendEmail = async (to: string, studentName: string, goal: string): Promise<void> => {
+  const subject = `Solicitação de Autoavaliação para ${goal}`;
+  const text = `Olá ${studentName},\n\nVocê foi solicitado a preencher a autoavaliação para a meta: ${goal}.\nPor favor, acesse o sistema para completar sua autoavaliação.\n\nObrigado!`;
   try {
     // Esses parâmetros devem bater com as variáveis {{variavel}} no seu Template do site
     const templateParams = {
@@ -31,7 +45,7 @@ const sendEmail = async (to: string, subject: string, text: string): Promise<voi
       templateParams,
       {
         publicKey: EMAILJS_CONFIG.publicKey,
-        privateKey: EMAILJS_CONFIG.privateKey, // Obrigatório no Backend
+        privateKey: EMAILJS_CONFIG.privateKey,
       }
     );
 
@@ -256,16 +270,11 @@ app.post('/api/classes/:classId/requestSelfEvaluationAll/:goal', async (req, res
       const filled = enrollment.getSelfEvaluationForGoal(goal);
 
       if (!filled) {
-        enrollment.requestSelfEvaluation(goal);
-        
         try {
-          await sendEmail(
-            enrollment.getStudent().email,
-            `Solicitação de Autoavaliação para ${goal}`,
-            `Olá ${enrollment.getStudent().name},\n\nVocê foi solicitado a preencher a autoavaliação para a meta: ${goal}.\nPor favor, acesse o sistema para completar sua autoavaliação.\n\nObrigado!`
-          );
+            await sendEmail(
+              enrollment.getStudent().email,enrollment.getStudent().name,goal)
         } catch (emailErr) {
-          console.error(`Erro ao enviar email para ${enrollment.getStudent().name}:`, emailErr);
+            console.error("Erro no envio de email:", emailErr);
         }
       }
     }
@@ -297,21 +306,16 @@ app.post('/api/classes/:classId/enrollments/:studentCPF/requestSelfEvaluation/:g
     console.log('cpf:', clearCPF, 'goal:', goal, 'filled:', filled);
 
     if (filled) {
-      return res.json({ message: `Student already filled goal '${goal}'` });
+      return res.status(422).json({ message: `Student already filled goal '${goal}'` });
     }
 
     try {
         await sendEmail(
-          enrollment.getStudent().email,
-          `Solicitação de Autoavaliação para ${goal}`,
-          `Olá ${enrollment.getStudent().name},\n\nVocê foi solicitado a preencher a autoavaliação para a meta: ${goal}.\nPor favor, acesse o sistema para completar sua autoavaliação.\n\nObrigado!`
-        );
+          enrollment.getStudent().email,enrollment.getStudent().name,goal)
     } catch (emailErr) {
         console.error("Erro no envio de email:", emailErr);
-        // Opcional: Você pode decidir retornar erro 500 aqui se o email for obrigatório
     }
 
-    enrollment.requestSelfEvaluation(goal);
     triggerSave();
 
     return res.json({ message: "Request created" });
@@ -325,10 +329,8 @@ app.post('/api/classes/:classId/enrollments/:studentCPF/requestSelfEvaluation/:g
 app.post('/api/classes/:classId/scheduleOneTime/:goal', async (req, res) => {
   try {
     const { classId, goal } = req.params;
-    const { hours } = req.body; // Ex: 48
-
+    const { hours } = req.body; 
     if (!hours) return res.status(400).json({ error: "Horas não informadas" });
-
     const classObj = classes.findClassById(classId);
     if (!classObj) return res.status(404).json({ error: "Turma não encontrada" });
 
@@ -337,7 +339,6 @@ app.post('/api/classes/:classId/scheduleOneTime/:goal', async (req, res) => {
     classObj.getEnrollments().forEach(enrollment => {
       // Só agenda se o aluno ainda não fez
       if (!enrollment.getSelfEvaluationForGoal(goal)) {
-         // Chama o método novo que criamos no Enrollment
          enrollment.scheduleOneTimeReminder(goal, Number(hours));
          count++;
       }
@@ -345,18 +346,12 @@ app.post('/api/classes/:classId/scheduleOneTime/:goal', async (req, res) => {
 
     triggerSave(); // Salva no JSON
     
-    // Note que NÃO enviamos e-mail agora. Apenas agendamos.
+    // Agendando
     return res.json({ message: `Agendado disparo único daqui a ${hours}h para ${count} alunos.` });
 
   } catch (err:any) {
     return res.status(500).json({ error: err.message });
   }
-});
-
-app.post("/api/classes/:classId/self-evaluation/:cpf", (req, res) => {
-  const { classId, cpf } = req.params;
-  //Fazer o send email
-  res.status(200).json({ ok: true, message: "Solicitação enviada" });
 });
 
 // POST /api/students - Add a new student
@@ -630,9 +625,7 @@ app.post('/api/classes/gradeImport/:classId', upload_dir.single('file'), async (
   res.status(501).json({ error: "Endpoint ainda não implementado." });
 });
 
-const SCHEDULER_INTERVAL = 60 * 1000; // Roda a cada 1 minuto
-//
-
+const SCHEDULER_INTERVAL = 30 * 1000;
 
 if (process.env.NODE_ENV !== 'test') {
   setInterval(async () => {
@@ -645,16 +638,14 @@ if (process.env.NODE_ENV !== 'test') {
       for (const enrollment of classObj.getEnrollments()) {
         
         // O método retorna o NOME DA META se for hora de enviar, ou null se não for
-        // Ele internamente já LIMPOU o agendamento (One-shot)
         const metaParaEnviar = enrollment.checkAndExecuteOneTime(now);
-
         if (metaParaEnviar) {
           const student = enrollment.getStudent();
           console.log(`Enviando lembrete único para ${student.email}`);
           
           const msg = `Olá ${student.name}, passando para lembrar que você ainda não preencheu a meta: ${metaParaEnviar}.`;
           
-          await sendEmail(student.email, `Lembrete: ${metaParaEnviar}`, msg);
+          await sendEmail(student.email, student.name, metaParaEnviar);
           
           houveMudanca = true;
         }
@@ -679,3 +670,4 @@ if (process.env.NODE_ENV !== 'test') {
 //  });
 
   export { app };
+  export { cleanCPF };

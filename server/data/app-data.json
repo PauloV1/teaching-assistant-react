@@ -3,22 +3,32 @@
     {
       "name": "Paulo Borba",
       "cpf": "11111111111",
-      "email": "phmb@cin.ufpe.br"
+      "email": "ddaniel.live@gmail.com"
     },
     {
       "name": "Maria Modularidade",
       "cpf": "22222222222",
-      "email": "mm@cin.ufpe.br"
+      "email": "ddaniel.live@gmail.com"
     },
     {
       "name": "João Elegância",
       "cpf": "33333333333",
-      "email": "je@cin.ufpe.br"
+      "email": "ddaniel.live@gmail.com"
     },
     {
       "name": "Joana Refatoração",
       "cpf": "55555555555",
       "email": "jr@gmail.com"
+    },
+    {
+      "name": "Aluno Teste",
+      "cpf": "12345678909",
+      "email": "aluno@teste.com"
+    },
+    {
+      "name": "Aluno Já Respondeu",
+      "cpf": "18293812399",
+      "email": "respondido@teste.com"
     }
   ],
   "classes": [
@@ -26,18 +36,6 @@
       "topic": "Engenharia de Software e Sistemas",
       "semester": 1,
       "year": 2025,
-      "especificacaoDoCalculoDaMedia": {
-        "pesosDosConceitos": {
-          "MA": 10,
-          "MPA": 7,
-          "MANA": 0
-        },
-        "pesosDasMetas": {
-          "Gerência de Configuração": 1,
-          "Gerência de Projeto": 1,
-          "Qualidade de Software": 1
-        }
-      },
       "enrollments": [
         {
           "studentCPF": "11111111111",
@@ -66,7 +64,8 @@
               "goal": "Refactoring",
               "grade": "MA"
             }
-          ]
+          ],
+          "selfEvaluations": []
         },
         {
           "studentCPF": "55555555555",
@@ -95,7 +94,8 @@
               "goal": "Tests",
               "grade": "MPA"
             }
-          ]
+          ],
+          "selfEvaluations": []
         },
         {
           "studentCPF": "22222222222",
@@ -112,7 +112,8 @@
               "goal": "Project Management",
               "grade": "MPA"
             }
-          ]
+          ],
+          "selfEvaluations": []
         }
       ]
     },
@@ -120,18 +121,6 @@
       "topic": "Engenharia de Software e Sistemas",
       "semester": 2,
       "year": 2025,
-      "especificacaoDoCalculoDaMedia": {
-        "pesosDosConceitos": {
-          "MA": 10,
-          "MPA": 7,
-          "MANA": 0
-        },
-        "pesosDasMetas": {
-          "Gerência de Configuração": 1,
-          "Gerência de Projeto": 1,
-          "Qualidade de Software": 1
-        }
-      },
       "enrollments": [
         {
           "studentCPF": "22222222222",
@@ -160,7 +149,8 @@
               "goal": "Tests",
               "grade": "MA"
             }
-          ]
+          ],
+          "selfEvaluations": []
         },
         {
           "studentCPF": "33333333333",
@@ -189,9 +179,163 @@
               "goal": "Refactoring",
               "grade": "MA"
             }
+          ],
+          "selfEvaluations": []
+        }
+      ]
+    },
+    {
+      "topic": "Turma 1765349914020",
+      "semester": 1,
+      "year": 2025,
+      "enrollments": [
+        {
+          "studentCPF": "12345678909",
+          "evaluations": [],
+          "selfEvaluations": []
+        }
+      ]
+    },
+    {
+      "topic": "Turma a1",
+      "semester": 1,
+      "year": 2025,
+      "enrollments": [
+        {
+          "studentCPF": "18293812399",
+          "evaluations": [],
+          "selfEvaluations": [
+            {
+              "goal": "Design",
+              "grade": "MA"
+            }
           ]
         }
       ]
+    },
+    {
+      "topic": "Turma b1",
+      "semester": 1,
+      "year": 2025,
+      "enrollments": []
+    },
+    {
+      "topic": "Turma 1765349945017",
+      "semester": 1,
+      "year": 2025,
+      "enrollments": [
+        {
+          "studentCPF": "12345678909",
+          "evaluations": [],
+          "selfEvaluations": []
+        }
+      ]
+    },
+    {
+      "topic": "Turma 1765350351191",
+      "semester": 1,
+      "year": 2025,
+      "enrollments": [
+        {
+          "studentCPF": "12345678909",
+          "evaluations": [],
+          "selfEvaluations": []
+        }
+      ]
+    },
+    {
+      "topic": "Turma function now() { [native code] }",
+      "semester": 1,
+      "year": 2025,
+      "enrollments": [
+        {
+          "studentCPF": "18293812399",
+          "evaluations": [],
+          "selfEvaluations": [
+            {
+              "goal": "Design",
+              "grade": "MA"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "topic": "Turma 1765350355821",
+      "semester": 1,
+      "year": 2025,
+      "enrollments": []
+    },
+    {
+      "topic": "Turma 1765366263836",
+      "semester": 1,
+      "year": 2025,
+      "enrollments": [
+        {
+          "studentCPF": "12345678909",
+          "evaluations": [],
+          "selfEvaluations": []
+        }
+      ]
+    },
+    {
+      "topic": "Turma 1765366265724",
+      "semester": 1,
+      "year": 2025,
+      "enrollments": []
+    },
+    {
+      "topic": "Turma 1765366399306",
+      "semester": 1,
+      "year": 2025,
+      "enrollments": [
+        {
+          "studentCPF": "12345678909",
+          "evaluations": [],
+          "selfEvaluations": []
+        }
+      ]
+    },
+    {
+      "topic": "Turma function now() { [native code] }",
+      "semester": 2,
+      "year": 2025,
+      "enrollments": [
+        {
+          "studentCPF": "18293812399",
+          "evaluations": [],
+          "selfEvaluations": [
+            {
+              "goal": "Design",
+              "grade": "MA"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "topic": "Turma 1765366400800",
+      "semester": 1,
+      "year": 2025,
+      "enrollments": []
+    },
+    {
+      "topic": "Turma 1765366424955",
+      "semester": 1,
+      "year": 2025,
+      "enrollments": [
+        {
+          "studentCPF": "12345678909",
+          "evaluations": [],
+          "selfEvaluations": []
+        }
+      ]
+    },
+    {
+      "topic": "Turma 1765366426460",
+      "semester": 1,
+      "year": 2025,
+      "enrollments": []
     }
   ]
 }

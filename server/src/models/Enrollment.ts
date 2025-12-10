@@ -9,9 +9,6 @@ export class Enrollment {
   private selfEvaluationRequested: boolean = false;
   private selfEvaluationRequestDate?: string;
   private oneTimeSchedule: { goal: string, executeAt: number } | null = null;
-  private nextAutoResendTime?: string;
-  private resendAttempts: number = 0;
-  private pendingGoals: string[] = [];
   // Média do estudante antes da prova final
   private mediaPreFinal: number;
   // Média do estudante depois da final
@@ -141,22 +138,6 @@ export class Enrollment {
       this.addOrUpdateSelfEvaluation(selfEvaluation.getGoal(), selfEvaluation.getGrade());
     });
   }
-  //Solicitar autoavaliação
-  requestSelfEvaluation(goal: string) {
-    this.selfEvaluationRequested = true;
-    this.selfEvaluationRequestDate = new Date().toISOString();
-    
-    // marcar que meta X está pendente
-    this.pendingGoals ??= [];
-    if (!this.pendingGoals.includes(goal)) {
-        this.pendingGoals.push(goal);
-    }
-
-    const hours = 24;
-    const next = new Date(Date.now() + hours * 3600 * 1000);
-    this.nextAutoResendTime = next.toISOString();
-    this.resendAttempts = 0;
-}
 
 // Método para AGENDAR (Chamado pela Rota)
   public scheduleOneTimeReminder(goal: string, hoursFromNow: number) {
@@ -222,3 +203,5 @@ export class Enrollment {
   }
 
 }
+
+export default Enrollment;
