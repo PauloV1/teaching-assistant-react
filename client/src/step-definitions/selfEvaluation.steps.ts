@@ -517,6 +517,37 @@ Then('I should see the goal {string}', async function(goal: string) {
   expect(hasGoal).toBe(true);
 });
 
+Then('I should see all evaluation goals', async function() {
+  const expectedGoals = [
+    'Requirements',
+    'Configuration Management',
+    'Project Management',
+    'Design',
+    'Tests',
+    'Refactoring'
+  ];
+  
+  for (const goal of expectedGoals) {
+    const hasGoal = await page.evaluate((goalText) => {
+      const cells = Array.from(document.querySelectorAll('td'));
+      return cells.some(cell => cell.textContent?.trim() === goalText);
+    }, goal);
+    expect(hasGoal).toBe(true);
+  }
+});
+
+Then('I should see the following goals:', async function(dataTable: any) {
+  const goals = dataTable.hashes();
+  
+  for (const { goal } of goals) {
+    const hasGoal = await page.evaluate((goalText) => {
+      const cells = Array.from(document.querySelectorAll('td'));
+      return cells.some(cell => cell.textContent?.trim() === goalText);
+    }, goal);
+    expect(hasGoal).toBe(true);
+  }
+});
+
 Then('the grade for {string} should be {string}', async function(goal: string, expectedGrade: string) {
   await new Promise(resolve => setTimeout(resolve, 500)); // Wait for any updates
   
@@ -569,4 +600,66 @@ Then('the {string} button should be enabled', async function(buttonText: string)
     return button ? !button.disabled : false;
   }, buttonText);
   expect(isEnabled).toBe(true);
+});
+
+When('I submit the following self-evaluations:', async function(dataTable: any) {
+  const rows = dataTable.hashes();
+  for (const row of rows) {
+    await page.evaluate((goalText, gradeValue) => {
+      const rows = Array.from(document.querySelectorAll('tr.student-row'));
+      const rowElement = rows.find(r => {
+        const cells = r.querySelectorAll('td');
+        return cells[0]?.textContent?.trim() === goalText;
+      });
+      
+      if (rowElement) {
+        const select = rowElement.querySelector('select') as HTMLSelectElement;
+        if (select) {
+          const valueMap: { [key: string]: string } = {
+            'MA': 'MA',
+            'MPA': 'MPA',
+            'MANA': 'MANA',
+            '-': ''
+          };
+          select.value = valueMap[gradeValue] !== undefined ? valueMap[gradeValue] : gradeValue;
+          select.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+      }
+    }, row.goal, row.grade);
+    
+    await waitForNetworkIdle(page);
+    await new Promise(resolve => setTimeout(resolve, 500));
+  }
+});
+
+Then('I should see the following self-evaluations saved:', async function(dataTable: any) {
+  const rows = dataTable.hashes();
+  
+  for (const row of rows) {
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
+    const actualGrade = await page.evaluate((goalText) => {
+      const rows = Array.from(document.querySelectorAll('tr.student-row'));
+      const rowElement = rows.find(r => {
+        const cells = r.querySelectorAll('td');
+        return cells[0]?.textContent?.trim() === goalText;
+      });
+      
+      if (rowElement) {
+        const select = rowElement.querySelector('select') as HTMLSelectElement;
+        return select ? select.value : null;
+      }
+      return null;
+    }, row.goal);
+    
+    const valueMap: { [key: string]: string } = {
+      'MA': 'MA',
+      'MPA': 'MPA',
+      'MANA': 'MANA',
+      '-': ''
+    };
+    
+    const expected = valueMap[row.grade] !== undefined ? valueMap[row.grade] : row.grade;
+    expect(actualGrade).toBe(expected);
+  }
 });

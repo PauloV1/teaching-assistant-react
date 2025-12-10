@@ -4,30 +4,39 @@ import { Student } from '../models/Student';
 import { Class } from '../models/Class';
 import { DEFAULT_ESPECIFICACAO_DO_CALCULO_DA_MEDIA } from '../models/EspecificacaoDoCalculoDaMedia';
 
+/**
+ * Clean up all students and classes from the test environment
+ * Used in beforeEach to ensure test isolation
+ */
+const cleanupTestData = (): void => {
+  // Clear all students
+  const allStudents = studentSet.getAllStudents();
+  allStudents.forEach(student => {
+    try {
+      studentSet.removeStudent(student.getCPF());
+    } catch (error) {
+      // Student might not exist, which is fine for cleanup
+    }
+  });
+
+  // Clear all classes
+  const allClasses = classes.getAllClasses();
+  allClasses.forEach(classObj => {
+    try {
+      classes.removeClass(classObj.getClassId());
+    } catch (error) {
+      // Class might not exist, which is fine for cleanup
+    }
+  });
+};
+
 describe('Server API - Self-Evaluation Endpoints', () => {
   let testStudent: Student;
   let testClass: Class;
 
   // Clean up and setup before each test
   beforeEach(() => {
-    // Clear all students and classes
-    const allStudents = studentSet.getAllStudents();
-    allStudents.forEach(student => {
-      try {
-        studentSet.removeStudent(student.getCPF());
-      } catch (error) {
-        // Student might not exist
-      }
-    });
-
-    const allClasses = classes.getAllClasses();
-    allClasses.forEach(classObj => {
-      try {
-        classes.removeClass(classObj.getClassId());
-      } catch (error) {
-        // Class might not exist
-      }
-    });
+    cleanupTestData();
 
     // Create test student
     testStudent = new Student('João Silva', '123.456.789-01', 'joao@email.com');
@@ -43,49 +52,17 @@ describe('Server API - Self-Evaluation Endpoints', () => {
 
   describe('PUT /api/classes/:classId/enrollments/:studentCPF/selfEvaluation', () => {
     describe('Valid self-evaluation submissions', () => {
-      test('should add MA self-evaluation for a goal', async () => {
+      test.each([
+        ['MA', 'Requirements'],
+        ['MPA', 'Configuration Management'],
+        ['MANA', 'Project Management']
+      ])('should add %s self-evaluation for a goal', async (grade, goal) => {
         const response = await request(app)
           .put(`/api/classes/${testClass.getClassId()}/enrollments/${testStudent.getCPF()}/selfEvaluation`)
-          .send({
-            goal: 'Requirements',
-            grade: 'MA'
-          })
+          .send({ goal, grade })
           .expect(200);
 
-        expect(response.body.selfEvaluations).toContainEqual({
-          goal: 'Requirements',
-          grade: 'MA'
-        });
-      });
-
-      test('should add MPA self-evaluation for a goal', async () => {
-        const response = await request(app)
-          .put(`/api/classes/${testClass.getClassId()}/enrollments/${testStudent.getCPF()}/selfEvaluation`)
-          .send({
-            goal: 'Configuration Management',
-            grade: 'MPA'
-          })
-          .expect(200);
-
-        expect(response.body.selfEvaluations).toContainEqual({
-          goal: 'Configuration Management',
-          grade: 'MPA'
-        });
-      });
-
-      test('should add MANA self-evaluation for a goal', async () => {
-        const response = await request(app)
-          .put(`/api/classes/${testClass.getClassId()}/enrollments/${testStudent.getCPF()}/selfEvaluation`)
-          .send({
-            goal: 'Project Management',
-            grade: 'MANA'
-          })
-          .expect(200);
-
-        expect(response.body.selfEvaluations).toContainEqual({
-          goal: 'Project Management',
-          grade: 'MANA'
-        });
+        expect(response.body.selfEvaluations).toContainEqual({ goal, grade });
       });
 
       test('should accept CPF with formatting (dots and hyphens)', async () => {
@@ -158,186 +135,64 @@ describe('Server API - Self-Evaluation Endpoints', () => {
     });
 
     describe('Update existing self-evaluations', () => {
-      test('should update existing self-evaluation from MA to MPA', async () => {
+      test.each([
+        ['MA', 'MPA', 'Requirements'],
+        ['MPA', 'MANA', 'Design'],
+        ['MANA', 'MA', 'Tests']
+      ])('should update existing self-evaluation from %s to %s', async (initialGrade, newGrade, goal) => {
         // Create initial evaluation
         await request(app)
           .put(`/api/classes/${testClass.getClassId()}/enrollments/${testStudent.getCPF()}/selfEvaluation`)
-          .send({
-            goal: 'Requirements',
-            grade: 'MA'
-          })
+          .send({ goal, grade: initialGrade })
           .expect(200);
 
         // Update the same goal
         const response = await request(app)
           .put(`/api/classes/${testClass.getClassId()}/enrollments/${testStudent.getCPF()}/selfEvaluation`)
-          .send({
-            goal: 'Requirements',
-            grade: 'MPA'
-          })
+          .send({ goal, grade: newGrade })
           .expect(200);
 
-        expect(response.body.selfEvaluations).toContainEqual({
-          goal: 'Requirements',
-          grade: 'MPA'
-        });
+        expect(response.body.selfEvaluations).toContainEqual({ goal, grade: newGrade });
 
-        // Should have only one evaluation for Requirements
-        const requirementsEvals = response.body.selfEvaluations.filter(
-          (e: any) => e.goal === 'Requirements'
-        );
-        expect(requirementsEvals).toHaveLength(1);
-      });
-
-      test('should update existing self-evaluation from MPA to MANA', async () => {
-        await request(app)
-          .put(`/api/classes/${testClass.getClassId()}/enrollments/${testStudent.getCPF()}/selfEvaluation`)
-          .send({
-            goal: 'Design',
-            grade: 'MPA'
-          })
-          .expect(200);
-
-        const response = await request(app)
-          .put(`/api/classes/${testClass.getClassId()}/enrollments/${testStudent.getCPF()}/selfEvaluation`)
-          .send({
-            goal: 'Design',
-            grade: 'MANA'
-          })
-          .expect(200);
-
-        expect(response.body.selfEvaluations).toContainEqual({
-          goal: 'Design',
-          grade: 'MANA'
-        });
-      });
-
-      test('should update existing self-evaluation from MANA to MA', async () => {
-        await request(app)
-          .put(`/api/classes/${testClass.getClassId()}/enrollments/${testStudent.getCPF()}/selfEvaluation`)
-          .send({
-            goal: 'Tests',
-            grade: 'MANA'
-          })
-          .expect(200);
-
-        const response = await request(app)
-          .put(`/api/classes/${testClass.getClassId()}/enrollments/${testStudent.getCPF()}/selfEvaluation`)
-          .send({
-            goal: 'Tests',
-            grade: 'MA'
-          })
-          .expect(200);
-
-        expect(response.body.selfEvaluations).toContainEqual({
-          goal: 'Tests',
-          grade: 'MA'
-        });
+        // Should have only one evaluation for this goal
+        const goalEvals = response.body.selfEvaluations.filter((e: any) => e.goal === goal);
+        expect(goalEvals).toHaveLength(1);
       });
     });
 
     describe('Remove self-evaluations', () => {
-      test('should remove self-evaluation when grade is empty string', async () => {
+      test.each([
+        ['empty string', '', 'Requirements'],
+        ['null', null, 'Design'],
+        ['undefined', undefined, 'Tests']
+      ])('should remove self-evaluation when grade is %s', async (description, gradeValue, goal) => {
         // Add evaluation
         await request(app)
           .put(`/api/classes/${testClass.getClassId()}/enrollments/${testStudent.getCPF()}/selfEvaluation`)
-          .send({
-            goal: 'Requirements',
-            grade: 'MA'
-          })
+          .send({ goal, grade: 'MA' })
           .expect(200);
 
-        // Remove by sending empty grade
+        // Remove by sending empty/null/undefined grade
         const response = await request(app)
           .put(`/api/classes/${testClass.getClassId()}/enrollments/${testStudent.getCPF()}/selfEvaluation`)
-          .send({
-            goal: 'Requirements',
-            grade: ''
-          })
+          .send({ goal, grade: gradeValue })
           .expect(200);
 
         expect(response.body.selfEvaluations).not.toContainEqual(
-          expect.objectContaining({ goal: 'Requirements' })
-        );
-      });
-
-      test('should remove self-evaluation when grade is null', async () => {
-        await request(app)
-          .put(`/api/classes/${testClass.getClassId()}/enrollments/${testStudent.getCPF()}/selfEvaluation`)
-          .send({
-            goal: 'Design',
-            grade: 'MPA'
-          })
-          .expect(200);
-
-        const response = await request(app)
-          .put(`/api/classes/${testClass.getClassId()}/enrollments/${testStudent.getCPF()}/selfEvaluation`)
-          .send({
-            goal: 'Design',
-            grade: null
-          })
-          .expect(200);
-
-        expect(response.body.selfEvaluations).not.toContainEqual(
-          expect.objectContaining({ goal: 'Design' })
-        );
-      });
-
-      test('should remove self-evaluation when grade is undefined', async () => {
-        await request(app)
-          .put(`/api/classes/${testClass.getClassId()}/enrollments/${testStudent.getCPF()}/selfEvaluation`)
-          .send({
-            goal: 'Tests',
-            grade: 'MA'
-          })
-          .expect(200);
-
-        const response = await request(app)
-          .put(`/api/classes/${testClass.getClassId()}/enrollments/${testStudent.getCPF()}/selfEvaluation`)
-          .send({
-            goal: 'Tests',
-            grade: undefined
-          })
-          .expect(200);
-
-        expect(response.body.selfEvaluations).not.toContainEqual(
-          expect.objectContaining({ goal: 'Tests' })
+          expect.objectContaining({ goal })
         );
       });
     });
 
     describe('Invalid self-evaluation requests', () => {
-      test('should reject invalid grade (not MA, MPA, or MANA)', async () => {
+      test.each([
+        ['invalid grade (not MA, MPA, or MANA)', 'INVALID'],
+        ['numeric grade', '10'],
+        ['lowercase grade', 'ma']
+      ])('should reject %s', async (description, grade) => {
         const response = await request(app)
           .put(`/api/classes/${testClass.getClassId()}/enrollments/${testStudent.getCPF()}/selfEvaluation`)
-          .send({
-            goal: 'Requirements',
-            grade: 'INVALID'
-          })
-          .expect(400);
-
-        expect(response.body.error).toContain('Invalid grade');
-      });
-
-      test('should reject numeric grade', async () => {
-        const response = await request(app)
-          .put(`/api/classes/${testClass.getClassId()}/enrollments/${testStudent.getCPF()}/selfEvaluation`)
-          .send({
-            goal: 'Requirements',
-            grade: '10'
-          })
-          .expect(400);
-
-        expect(response.body.error).toContain('Invalid grade');
-      });
-
-      test('should reject lowercase grade', async () => {
-        const response = await request(app)
-          .put(`/api/classes/${testClass.getClassId()}/enrollments/${testStudent.getCPF()}/selfEvaluation`)
-          .send({
-            goal: 'Requirements',
-            grade: 'ma'
-          })
+          .send({ goal: 'Requirements', grade })
           .expect(400);
 
         expect(response.body.error).toContain('Invalid grade');

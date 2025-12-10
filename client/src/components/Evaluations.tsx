@@ -1,9 +1,18 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Class } from '../types/Class';
-import ClassService from '../services/ClassService';
 import EnrollmentService from '../services/EnrollmentService';
-
+import ClassService from '../services/ClassService';
+import { Class } from '../types/Class';
 import { ImportGradeComponent } from './ImportGrade';
+
+// Evaluation goals
+const EVALUATION_GOALS = [
+  'Requirements',
+  'Configuration Management',
+  'Project Management',
+  'Design',
+  'Tests',
+  'Refactoring'
+] as const;
 
 interface EvaluationsProps {
   onError: (errorMessage: string) => void;
@@ -12,24 +21,13 @@ interface EvaluationsProps {
 type ViewMode = 'evaluations' | 'self-evaluations' | 'comparison';
 
 const Evaluations: React.FC<EvaluationsProps> = ({ onError }) => {
-  const [classes, setClasses] = useState<Class[]>([]);
-  const [selectedClassId, setSelectedClassId] = useState<string>(() => {
-    // Load previously selected class from localStorage
-    return localStorage.getItem('evaluations-selected-class') || '';
-  });
-  const [selectedClass, setSelectedClass] = useState<Class | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>('evaluations');
 
-  // Predefined evaluation goals
-  const evaluationGoals = [
-    'Requirements',
-    'Configuration Management', 
-    'Project Management',
-    'Design',
-    'Tests',
-    'Refactoring'
-  ];
+  // Class management state (from useClasses hook)
+  const [classes, setClasses] = useState<Class[]>([]);
+  const [selectedClassId, setSelectedClassId] = useState<string>('');
+  const [selectedClass, setSelectedClass] = useState<Class | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const loadClasses = useCallback(async () => {
     try {
@@ -48,7 +46,7 @@ const Evaluations: React.FC<EvaluationsProps> = ({ onError }) => {
     loadClasses();
   }, [loadClasses]);
 
-  // Update selected class when selectedClassId changes
+  // Update selected class when selectedClassId or classes change
   useEffect(() => {
     if (selectedClassId) {
       const classObj = classes.find(c => c.id === selectedClassId);
@@ -60,12 +58,6 @@ const Evaluations: React.FC<EvaluationsProps> = ({ onError }) => {
 
   const handleClassSelection = (classId: string) => {
     setSelectedClassId(classId);
-    // Save selected class to localStorage for persistence
-    if (classId) {
-      localStorage.setItem('evaluations-selected-class', classId);
-    } else {
-      localStorage.removeItem('evaluations-selected-class');
-    }
   };
 
   const handleEvaluationChange = async (studentCPF: string, goal: string, grade: string) => {
@@ -223,7 +215,7 @@ const Evaluations: React.FC<EvaluationsProps> = ({ onError }) => {
                 <thead>
                   <tr>
                     <th className="student-name-header">Student</th>
-                    {evaluationGoals.map(goal => (
+                    {EVALUATION_GOALS.map(goal => (
                       <th key={goal} className="goal-header">{goal}</th>
                     ))}
                   </tr>
@@ -241,7 +233,7 @@ const Evaluations: React.FC<EvaluationsProps> = ({ onError }) => {
                     return (
                       <tr key={student.cpf} className="student-row">
                         <td className="student-name-cell">{student.name}</td>
-                        {evaluationGoals.map(goal => {
+                        {EVALUATION_GOALS.map(goal => {
                           const currentGrade = studentEvaluations[goal] || '';
                           
                           return (
@@ -274,7 +266,7 @@ const Evaluations: React.FC<EvaluationsProps> = ({ onError }) => {
                 <thead>
                   <tr>
                     <th className="student-name-header">Student</th>
-                    {evaluationGoals.map(goal => (
+                    {EVALUATION_GOALS.map(goal => (
                       <th key={goal} className="goal-header">{goal}</th>
                     ))}
                   </tr>
@@ -292,7 +284,7 @@ const Evaluations: React.FC<EvaluationsProps> = ({ onError }) => {
                     return (
                       <tr key={student.cpf} className="student-row">
                         <td className="student-name-cell">{student.name}</td>
-                        {evaluationGoals.map(goal => {
+                        {EVALUATION_GOALS.map(goal => {
                           const currentGrade = studentSelfEvaluations[goal] || '';
 
                           const getGradeStyle = (grade: string) => {
@@ -355,7 +347,7 @@ const Evaluations: React.FC<EvaluationsProps> = ({ onError }) => {
                 <thead>
                   <tr>
                     <th className="student-name-header" style={{ width: '180px' }}>Student</th>
-                    {evaluationGoals.map(goal => (
+                    {EVALUATION_GOALS.map(goal => (
                       <th key={goal} className="goal-header" style={{ gridColumn: 'span 2' }} colSpan={2}>
                         {goal}
                       </th>
@@ -363,7 +355,7 @@ const Evaluations: React.FC<EvaluationsProps> = ({ onError }) => {
                   </tr>
                   <tr>
                     <th className="goal-header" style={{ width: '180px' }}></th>
-                    {evaluationGoals.map(goal => (
+                    {EVALUATION_GOALS.map(goal => (
                       <React.Fragment key={`${goal}-header`}>
                         <th className="goal-header" style={{ width: '80px' }}>
                           Prof
@@ -394,7 +386,7 @@ const Evaluations: React.FC<EvaluationsProps> = ({ onError }) => {
                         <td className="student-name-cell" style={{ width: '180px' }}>
                           {student.name}
                         </td>
-                        {evaluationGoals.map(goal => {
+                        {EVALUATION_GOALS.map(goal => {
                           const evaluation = studentEvaluations[goal] || '';
                           const selfEvaluation = studentSelfEvaluations[goal] || '';
                           const discrepancyClass = getDiscrepancyClass(evaluation, selfEvaluation);

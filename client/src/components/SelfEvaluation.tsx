@@ -1,9 +1,24 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Class } from '../types/Class';
 import { Student } from '../types/Student';
-import ClassService from '../services/ClassService';
 import { studentService } from '../services/StudentService';
 import EnrollmentService from '../services/EnrollmentService';
+import ClassService from '../services/ClassService';
+
+// Evaluation goals
+const EVALUATION_GOALS = [
+  'Requirements',
+  'Configuration Management',
+  'Project Management',
+  'Design',
+  'Tests',
+  'Refactoring'
+] as const;
+
+// CPF utility function
+const cleanCPF = (cpf: string): string => {
+  return cpf.replace(/[.-]/g, '');
+};
 
 interface SelfEvaluationProps {
   onError: (errorMessage: string) => void;
@@ -12,29 +27,24 @@ interface SelfEvaluationProps {
 const SelfEvaluation: React.FC<SelfEvaluationProps> = ({ onError }) => {
   const [email, setEmail] = useState<string>('');
   const [cpf, setCpf] = useState<string>('');
+  const [studentData, setStudentData] = useState<Student | null>(null);
+  const [isSearching, setIsSearching] = useState(false);
+
+  // Class management state (from useClasses hook)
   const [classes, setClasses] = useState<Class[]>([]);
   const [selectedClassId, setSelectedClassId] = useState<string>('');
   const [selectedClass, setSelectedClass] = useState<Class | null>(null);
-  const [studentData, setStudentData] = useState<Student | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [isSearching, setIsSearching] = useState(false);
-
-  // Predefined evaluation goals
-  const evaluationGoals = [
-    'Requirements',
-    'Configuration Management',
-    'Project Management',
-    'Design',
-    'Tests',
-    'Refactoring'
-  ];
 
   const loadClasses = useCallback(async () => {
     try {
+      setIsLoading(true);
       const classesData = await ClassService.getAllClasses();
       setClasses(classesData);
     } catch (error) {
-      onError(`Failed to load classes. Please refresh the page and try again.`);
+      onError(`Failed to load classes: ${(error as Error).message}`);
+    } finally {
+      setIsLoading(false);
     }
   }, [onError]);
 
@@ -43,7 +53,7 @@ const SelfEvaluation: React.FC<SelfEvaluationProps> = ({ onError }) => {
     loadClasses();
   }, [loadClasses]);
 
-  // Update selected class when selectedClassId changes
+  // Update selected class when selectedClassId or classes change
   useEffect(() => {
     if (selectedClassId) {
       const classObj = classes.find(c => c.id === selectedClassId);
@@ -52,11 +62,6 @@ const SelfEvaluation: React.FC<SelfEvaluationProps> = ({ onError }) => {
       setSelectedClass(null);
     }
   }, [selectedClassId, classes]);
-
-  // Helper function to clean CPF
-  const cleanCPF = (cpf: string): string => {
-    return cpf.replace(/[.-]/g, '');
-  };
 
   const handleSearchStudent = async () => {
     if (!email.trim() || !cpf.trim()) {
@@ -68,7 +73,6 @@ const SelfEvaluation: React.FC<SelfEvaluationProps> = ({ onError }) => {
       setIsSearching(true);
       setStudentData(null);
       setSelectedClassId('');
-      setSelectedClass(null);
 
       const cleanedCPF = cleanCPF(cpf);
       const student = await studentService.getStudentByCPF(cleanedCPF);
@@ -81,9 +85,8 @@ const SelfEvaluation: React.FC<SelfEvaluationProps> = ({ onError }) => {
 
       setStudentData(student);
 
-      // Load fresh classes to get current enrollments
-      const classesData = await ClassService.getAllClasses();
-      setClasses(classesData);
+      // Reload classes to get current enrollments
+      await loadClasses();
     } catch (error) {
       onError(`Student not found. Please verify the CPF entered (${cpf}) and try again.`);
       setStudentData(null);
@@ -313,7 +316,7 @@ const SelfEvaluation: React.FC<SelfEvaluationProps> = ({ onError }) => {
                 </tr>
               </thead>
               <tbody>
-                {evaluationGoals.map((goal, index) => {
+                {EVALUATION_GOALS.map((goal, index) => {
                   // Find the enrollment for this student in the selected class
                   const cleanedStudentCPF = cleanCPF(studentData.cpf);
                   const enrollment = selectedClass.enrollments.find(
