@@ -215,10 +215,10 @@ Before(async function() {
   browser = await puppeteer.launch({
     headless: headless,
     slowMo: slowMo,
-    args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
+    defaultViewport: null, // Disable default viewport to use full window size
+    args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage', '--start-fullscreen']
   });
   page = await browser.newPage();
-  await page.setViewport({ width: 1280, height: 720 });
 });
 
 After(async function() {
@@ -328,6 +328,15 @@ Given('I have selected the class {string}', async function(classDisplay: string)
   
   await waitForNetworkIdle(page);
   await new Promise(resolve => setTimeout(resolve, 1000));
+  
+  // Scroll to the bottom of the page to show the entire table
+  await page.evaluate(() => {
+    window.scrollTo({
+      top: document.body.scrollHeight,
+      behavior: 'smooth'
+    });
+  });
+  await new Promise(resolve => setTimeout(resolve, 1000));
 });
 
 Given('I have selected {string} for goal {string}', async function(grade: string, goal: string) {
@@ -401,6 +410,15 @@ When('I select the class {string}', async function(classDisplay: string) {
   }, topic);
   
   await waitForNetworkIdle(page);
+  await new Promise(resolve => setTimeout(resolve, 1000));
+  
+  // Scroll to the bottom of the page to show the entire table
+  await page.evaluate(() => {
+    window.scrollTo({
+      top: document.body.scrollHeight,
+      behavior: 'smooth'
+    });
+  });
   await new Promise(resolve => setTimeout(resolve, 1000));
 });
 
