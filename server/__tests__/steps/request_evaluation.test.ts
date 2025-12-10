@@ -1,4 +1,4 @@
-/*import { defineFeature, loadFeature } from 'jest-cucumber';
+import { defineFeature, loadFeature } from 'jest-cucumber';
 import request from 'supertest';
 import { app } from '../../src/server';
 
@@ -69,8 +69,8 @@ defineFeature(feature, test => {
       // 2. Cria a turma
       const classRes = await request(app).post('/api/classes').send({
         topic: `Turma ${Date.now}`,
-        semester: 1,
-        year: 2025
+        semester: 2,
+        year: 2024
       });
       classId = classRes.body.id; 
 
@@ -136,4 +136,4 @@ defineFeature(feature, test => {
     });
   });
 
-});*/
+});

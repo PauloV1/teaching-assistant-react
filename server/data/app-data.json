@@ -265,6 +265,77 @@
       "semester": 1,
       "year": 2025,
       "enrollments": []
+    },
+    {
+      "topic": "Turma 1765366263836",
+      "semester": 1,
+      "year": 2025,
+      "enrollments": [
+        {
+          "studentCPF": "12345678909",
+          "evaluations": [],
+          "selfEvaluations": []
+        }
+      ]
+    },
+    {
+      "topic": "Turma 1765366265724",
+      "semester": 1,
+      "year": 2025,
+      "enrollments": []
+    },
+    {
+      "topic": "Turma 1765366399306",
+      "semester": 1,
+      "year": 2025,
+      "enrollments": [
+        {
+          "studentCPF": "12345678909",
+          "evaluations": [],
+          "selfEvaluations": []
+        }
+      ]
+    },
+    {
+      "topic": "Turma function now() { [native code] }",
+      "semester": 2,
+      "year": 2025,
+      "enrollments": [
+        {
+          "studentCPF": "18293812399",
+          "evaluations": [],
+          "selfEvaluations": [
+            {
+              "goal": "Design",
+              "grade": "MA"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "topic": "Turma 1765366400800",
+      "semester": 1,
+      "year": 2025,
+      "enrollments": []
+    },
+    {
+      "topic": "Turma 1765366424955",
+      "semester": 1,
+      "year": 2025,
+      "enrollments": [
+        {
+          "studentCPF": "12345678909",
+          "evaluations": [],
+          "selfEvaluations": []
+        }
+      ]
+    },
+    {
+      "topic": "Turma 1765366426460",
+      "semester": 1,
+      "year": 2025,
+      "enrollments": []
     }
   ]
 }

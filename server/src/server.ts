@@ -268,7 +268,6 @@ app.post('/api/classes/:classId/requestSelfEvaluationAll/:goal', async (req, res
       const filled = enrollment.getSelfEvaluationForGoal(goal);
 
       if (!filled) {
-        enrollment.requestSelfEvaluation(goal);
         
         try {
           await sendEmail(
@@ -323,7 +322,6 @@ app.post('/api/classes/:classId/enrollments/:studentCPF/requestSelfEvaluation/:g
         // Opcional: Você pode decidir retornar erro 500 aqui se o email for obrigatório
     }
 
-    enrollment.requestSelfEvaluation(goal);
     triggerSave();
 
     return res.json({ message: "Request created" });
