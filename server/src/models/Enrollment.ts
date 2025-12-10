@@ -36,7 +36,7 @@ export class Enrollment {
   }
 
   // Get media do estudante antes da prova final
-  getMediaPreFinal(): number{
+  getMediaPreFinal(): number | null{
     return this.mediaPreFinal;
   }
 
@@ -46,7 +46,7 @@ export class Enrollment {
   }
 
   // Get média do estudante depois da final
-  getMediaPosFinal(): number{
+  getMediaPosFinal(): number | null{
     return this.mediaPosFinal;
   }
 

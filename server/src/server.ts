@@ -37,6 +37,11 @@ const ensureDataDirectory = (): void => {
 };
 
 const saveDataToFile = (): void => {
+  // Skip saving in test environment
+  if (process.env.NODE_ENV === 'test') {
+    return;
+  }
+  
   try {
     const data = {
       students: studentSet.getAllStudents().map(student => ({
@@ -494,6 +499,12 @@ app.post('/api/classes/gradeImport/:classId', upload_dir.single('file'), async (
   res.status(501).json({ error: "Endpoint ainda não implementado." });
 });
 
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
-});
+// Export the app for testing
+export { app, studentSet, classes };
+
+// Only start the server if this file is run directly (not imported for testing)
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`Server running on http://localhost:${PORT}`);
+  });
+}
