@@ -7,10 +7,10 @@ Feature: Solicitação de Autoavaliação
     And a mensagem de resposta deve indicar "Request created"
   
   Scenario: Enviando solicitação autoavaliação para um aluno que já respondeu a autoavaliação
-    Given na turma "a1" existe um aluno de CPF "18293812399" que completou a autoavaliação da meta "Design" com "MA"
-    When eu solicito o envio de autoavaliação da meta "Design" para este aluno
+    Given na turma "a1" existe um aluno de CPF "45469845211" que completou a autoavaliação da meta "Tests" com "MA"
+    When eu solicito o envio de autoavaliação da meta "Tests" para este aluno
     Then o sistema deve retornar o status "422"
-    And a resposta deve indicar "Aluno já preencheu a meta Design"
+    And a resposta deve indicar "Aluno já preencheu a meta Tests"
 
   Scenario: Enviando Email para aluno não cadastrado na turma
     Given existe uma turma "b1" cadastrada no sistema

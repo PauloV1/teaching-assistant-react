@@ -2,7 +2,7 @@ import { defineFeature, loadFeature } from 'jest-cucumber';
 import request from 'supertest';
 import { app } from '../../server';
 
-const feature = loadFeature('./__tests__/features/selfEvaluation.feature');
+const feature = loadFeature('./src/__tests__/features/selfEvaluation.feature');
 
 let classId: string;
 let response: request.Response;
@@ -56,7 +56,7 @@ defineFeature(feature, test => {
   test('Enviando solicitação autoavaliação para um aluno que já respondeu a autoavaliação', ({ given, when, then, and }) => {
     let clearCPF = '';
     // Regex ajustado para pegar Turma, CPF e Meta
-    given(/^na turma "(.*)" existe um aluno de CPF "(.*)" que já completou a autoavaliação da meta "(.*)"$/, async (turma, cpf, meta) => {
+    given(/^na turma "(.*)" existe um aluno de CPF "(.*)" que completou a autoavaliação da meta "(.*)" com "(.*)"$/, async (turma, cpf, meta, nota) => {
       clearCPF = cpf.replace(/[^\d]/g, ''); // Limpa e guarda o CPF
       
       // 1. Cria o aluno
@@ -81,8 +81,8 @@ defineFeature(feature, test => {
 
       // 4. PREENCHE a autoavaliação (Simula que já existe)
       await request(app)
-        .put(`/api/classes/${classId}/enrollments/${clearCPF}/selfEvaluation/${meta}`)
-        .send({ goal: meta, grade: "MA" }); 
+        .put(`/api/classes/${classId}/enrollments/${clearCPF}/selfEvaluation`)
+        .send({ goal:meta, grade: nota}); 
     });
 
     when(/^eu solicito o envio de autoavaliação da meta "(.*)" para este aluno$/, async (goal) => {

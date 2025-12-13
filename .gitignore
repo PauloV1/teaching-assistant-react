@@ -6,6 +6,7 @@ server/data/app-data.json
 node_modules/
 server/dist/
 client/build/
+client/test-results
 # Cucumber test reports
 client/reports/
 cucumber-report.*

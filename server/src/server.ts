@@ -30,6 +30,10 @@ console.log("CONFIG::", EMAILJS_CONFIG);
 
 
 const sendEmail = async (to: string, studentName: string, goal: string): Promise<void> => {
+  if (process.env.NODE_ENV === 'test') {
+    console.log(`EmailJS tentou enviar para: ${to} mas estamos rodando testes`);
+    return;
+  }
   const subject = `Solicitação de Autoavaliação para ${goal}`;
   const text = `Olá ${studentName},\n\nVocê foi solicitado a preencher a autoavaliação para a meta: ${goal}.\nPor favor, acesse o sistema para completar sua autoavaliação.\n\nObrigado!`;
   try {
@@ -52,7 +56,7 @@ const sendEmail = async (to: string, studentName: string, goal: string): Promise
 
     console.log(`EmailJS enviado para: ${to}`);
   } catch (err) {
-    console.error('Erro ao enviar EmailJS:', err);
+    console.error('Erro ao enviar Email:', err);
   }
 };
 
@@ -247,11 +251,11 @@ const handleEvaluationUpdate = (req: Request, res: Response, options: {
     } else {
       if (!['MANA', 'MPA', 'MA'].includes(grade)) {
         return res.status(400).json({ error: 'Invalid grade. Must be MANA, MPA or MA' });
+      }if (isSelf) {
+        enrollment.addOrUpdateSelfEvaluation(goal, grade);
+      } else {
+        enrollment.addOrUpdateEvaluation(goal, grade);
       }
-
-      isSelf
-        ? enrollment.addOrUpdateSelfEvaluation(goal, grade)
-        : enrollment.addOrUpdateEvaluation(goal, grade);
     }
     triggerSave();
     res.json(enrollment.toJSON());
@@ -330,7 +334,6 @@ app.post('/api/classes/:classId/enrollments/:studentCPF/requestSelfEvaluation/:g
     } catch (emailErr) {
         console.error("Erro no envio de email:", emailErr);
     }
-  console.log('Checkpoint: Email disparado, salvando...');
     triggerSave();
     return res.json({ message: "Request created" });
 
@@ -626,9 +629,9 @@ app.put('/api/classes/:classId/enrollments/:studentCPF/evaluation', (req, res) =
   handleEvaluationUpdate(req, res, { type: 'evaluation' })
 );
 
-app.put('/api/classes/:classId/enrollments/:studentCPF/selfEvaluation', (req, res) =>
+app.put('/api/classes/:classId/enrollments/:studentCPF/selfEvaluation', (req, res) => {
   handleEvaluationUpdate(req, res, { type: 'selfEvaluation' })
-);
+});
 
 
 // POST api/classes/gradeImport/:classId, usado na feature de importacao de grades

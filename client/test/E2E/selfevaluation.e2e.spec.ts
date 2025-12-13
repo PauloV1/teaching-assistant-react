@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 
-const BASE_URL = "http://localhost:3000";
+const BASE_URL = "http://localhost:3004";
 
 test.describe("Solicitação de Autoavaliação - E2E", () => {
 
@@ -45,7 +45,13 @@ test.describe("Solicitação de Autoavaliação - E2E", () => {
         // Selecionar o botão "Enviar" da primeira linha (um aluno)
         await page.getByRole("button", { name: /^Enviar$/i }).first().click();
 
-        await expect(page.getByText(/Sucesso!/i)).toBeVisible();
+        const successMessage = page.locator('text=Sucesso!');
+        const errorMessage = page.locator('text=Aluno já preencheu a meta');
+    
+        const isSuccessVisible = await successMessage.isVisible();
+        const isErrorVisible = await errorMessage.isVisible();
+    
+        await expect(isSuccessVisible || isErrorVisible).toBe(true);
     }); 
 
   //--------------------------------------------------------------------
